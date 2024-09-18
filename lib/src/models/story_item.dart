@@ -14,7 +14,6 @@ class StoryItem {
     this.errorWidget,
     this.imageConfig,
     this.textConfig,
-    this.webConfig,
     this.customWidget,
     this.audioConfig,
   })  : assert(
@@ -61,7 +60,4 @@ class StoryItem {
 
   /// Applicable when [storyItemType] is [StoryItemType.text]
   final StoryViewTextConfig? textConfig;
-
-  /// Applicable when [storyItemType] is [StoryItemType.web]
-  final StoryViewWebConfig? webConfig;
 }
