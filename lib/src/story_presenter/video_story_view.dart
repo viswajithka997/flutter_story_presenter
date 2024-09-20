@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+
 import '../models/story_item.dart';
 import '../story_presenter/story_view.dart';
 import '../utils/story_utils.dart';
@@ -99,10 +100,11 @@ class _VideoStoryViewState extends State<VideoStoryView> {
         if (videoPlayerController != null) ...{
           if (widget.storyItem.videoConfig?.useVideoAspectRatio ?? false) ...{
             // Display the video with aspect ratio if specified.
-            AspectRatio(
-              aspectRatio: videoPlayerController!.value.aspectRatio,
-              child: VideoPlayer(videoPlayerController!),
-            )
+            // AspectRatio(
+            // aspectRatio: videoPlayerController!.value.aspectRatio,
+            // child:
+            VideoPlayer(videoPlayerController!),
+            // )
           } else ...{
             // Display the video fitted to the screen.
             FittedBox(
