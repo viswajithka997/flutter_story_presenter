@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -27,6 +28,7 @@ class VideoStoryView extends StatefulWidget {
 class _VideoStoryViewState extends State<VideoStoryView> {
   VideoPlayerController? videoPlayerController;
   bool hasError = false;
+  ChewieController? chewieController;
 
   @override
   void initState() {
@@ -61,6 +63,17 @@ class _VideoStoryViewState extends State<VideoStoryView> {
       await videoPlayerController?.play();
       await videoPlayerController?.setLooping(widget.looping ?? false);
       await videoPlayerController?.setVolume(storyItem.isMuteByDefault ? 0 : 1);
+      // Set up the Chewie controller and disable full-screen
+      chewieController = ChewieController(
+        videoPlayerController: videoPlayerController!,
+        looping: widget.looping ?? false,
+        autoPlay: true,
+        allowFullScreen: false, // Disable full-screen
+        aspectRatio: videoPlayerController!.value.aspectRatio,
+        showControls: false,
+      );
+
+      widget.onVideoLoad?.call(videoPlayerController!);
     } catch (e) {
       hasError = true;
       debugPrint('$e');
@@ -82,11 +95,7 @@ class _VideoStoryViewState extends State<VideoStoryView> {
         if (widget.storyItem.thumbnail != null) widget.storyItem.thumbnail!,
         if (hasError && widget.storyItem.errorWidget != null)
           widget.storyItem.errorWidget!,
-        if (videoPlayerController != null)
-          AspectRatio(
-            aspectRatio: videoPlayerController!.value.aspectRatio,
-            child: VideoPlayer(videoPlayerController!),
-          ),
+        if (chewieController != null) Chewie(controller: chewieController!),
       ],
     );
   }
