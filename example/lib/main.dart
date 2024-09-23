@@ -47,26 +47,9 @@ class _HomeState extends State<Home> {
       userProfile: 'https://avatars.githubusercontent.com/u/39383435?v=4',
       stories: [
         StoryItem(
-          storyItemType: StoryItemType.custom,
-          audioConfig: StoryViewAudioConfig(
-            audioPath: 'https://audios.ftcdn.net/08/98/82/47/48K_898824706.m4a',
-            source: StoryItemSource.network,
-            onAudioStart: (p0) {},
-          ),
-          customWidget: (p0, audioPlayer) => AudioCustomView1(
-            controller: p0,
-            audioPlayer: audioPlayer,
-          ),
-        ),
-        StoryItem(
-          storyItemType: StoryItemType.image,
-          url:
-              "https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg?auto=compress&cs=tinysrgb&w=800",
-        ),
-        StoryItem(
           storyItemType: StoryItemType.video,
-          storyItemSource: StoryItemSource.asset,
-          url: 'assets/fb8512a35d6f4b2e8917b74a048de71a.MP4',
+          url:
+              'https://dopamine-production.s3.ap-south-1.amazonaws.com/Dope/Dope-null/doper-3306//Cft0FBmE23gIb5oGJsChX.mp4',
           thumbnail: const Center(
               child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -82,124 +65,6 @@ class _HomeState extends State<Home> {
           )),
           videoConfig: const StoryViewVideoConfig(
             fit: BoxFit.cover,
-          ),
-        ),
-        StoryItem(
-            storyItemType: StoryItemType.video,
-            url:
-                'https://videos.pexels.com/video-files/5913245/5913245-uhd_1440_2560_30fps.mp4',
-            thumbnail: const Center(
-                child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CupertinoActivityIndicator(
-                  radius: 15,
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Text('Video Loading')
-              ],
-            )),
-            videoConfig: const StoryViewVideoConfig(
-              fit: BoxFit.cover,
-              height: double.infinity,
-              width: double.infinity,
-              loadingWidget: Center(child: CupertinoActivityIndicator()),
-            )),
-        StoryItem(
-          storyItemType: StoryItemType.custom,
-          duration: const Duration(seconds: 20),
-          customWidget: (p0, audioPlayer) => PostOverlayView(
-            controller: p0,
-          ),
-          imageConfig: StoryViewImageConfig(
-            fit: BoxFit.contain,
-            progressIndicatorBuilder: (p0, p1, p2) => const Center(
-              child: CupertinoActivityIndicator(),
-            ),
-          ),
-        ),
-      ],
-    ),
-    StoryModel(
-      userName: 'Lakhan P.',
-      userProfile: 'https://devkrest.com/team/lakhan.png',
-      stories: [
-        StoryItem(
-          storyItemType: StoryItemType.custom,
-          duration: const Duration(seconds: 20),
-          customWidget: (p0, audioPlayer) => PostOverlayView(
-            controller: p0,
-          ),
-          imageConfig: StoryViewImageConfig(
-            fit: BoxFit.contain,
-            progressIndicatorBuilder: (p0, p1, p2) => const Center(
-              child: CupertinoActivityIndicator(),
-            ),
-          ),
-        ),
-        StoryItem(
-          storyItemType: StoryItemType.video,
-          storyItemSource: StoryItemSource.asset,
-          url: 'assets/StorySaver.net-_spindia_-Video-1718781607686.mp4',
-          thumbnail: const Center(
-              child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CupertinoActivityIndicator(
-                radius: 15,
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Text('Video Loading')
-            ],
-          )),
-          videoConfig: const StoryViewVideoConfig(
-            fit: BoxFit.contain,
-          ),
-        ),
-      ],
-    ),
-    StoryModel(
-      userName: 'Harsh P.',
-      userProfile: 'https://devkrest.com/team/harsh.jpg',
-      stories: [
-        StoryItem(
-          storyItemType: StoryItemType.text,
-          textConfig: StoryViewTextConfig(
-              textWidget: const Text(
-                "Happy Independence Day",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    fontStyle: FontStyle.italic),
-              ),
-              backgroundWidget: Container(
-                decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                      Colors.deepOrange,
-                      Colors.white,
-                      Colors.green
-                    ])),
-              )),
-          url: "Happy Independence Day",
-        ),
-        StoryItem(
-          storyItemType: StoryItemType.web,
-          url:
-              'https://www.ndtv.com/webstories/travel/10-things-to-do-in-amritsar-from-golden-temple-visit-to-wagah-border-47',
-          duration: const Duration(seconds: 20),
-          imageConfig: StoryViewImageConfig(
-            fit: BoxFit.contain,
-            progressIndicatorBuilder: (p0, p1, p2) => const Center(
-              child: CupertinoActivityIndicator(),
-            ),
           ),
         ),
       ],

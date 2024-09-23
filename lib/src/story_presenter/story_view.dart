@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_story_presenter/src/story_presenter/story_custom_view_wrapper.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:video_player/video_player.dart';
 
 import '../controller/flutter_story_controller.dart';
 import '../models/story_item.dart';
@@ -22,7 +22,7 @@ typedef OnLeftTap = void Function();
 typedef OnRightTap = void Function();
 typedef OnDrag = void Function();
 typedef OnItemBuild = Widget? Function(int, Widget);
-typedef OnVideoLoad = void Function(BetterPlayerController?);
+typedef OnVideoLoad = void Function(VideoPlayerController?);
 typedef OnAudioLoaded = void Function(AudioPlayer);
 typedef CustomViewBuilder = Widget Function(AudioPlayer);
 typedef OnSlideDown = void Function(DragUpdateDetails);
@@ -84,7 +84,7 @@ class FlutterStoryView extends StatefulWidget {
   /// Configuration and styling options for the story view indicator.
   final StoryViewIndicatorConfig? storyViewIndicatorConfig;
 
-  /// Callback function to retrieve the BetterPlayerController when it is initialized and ready to play.
+  /// Callback function to retrieve the VideoPlayerController when it is initialized and ready to play.
   final OnVideoLoad? onVideoLoad;
 
   /// Widget to display user profile or other details at the top of the screen.
@@ -104,7 +104,7 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
   int currentIndex = 0;
   bool isCurrentItemLoaded = false;
   double currentItemProgress = 0;
-  BetterPlayerController? _currentVideoPlayer;
+  VideoPlayerController? _currentVideoPlayer;
   double? storyViewHeight;
   AudioPlayer? _audioPlayer;
   Duration? _totalAudioDuration;
@@ -219,7 +219,7 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
   /// Resumes the media playback.
   void _resumeMedia() {
     _audioPlayer?.play();
-    _currentVideoPlayer?.videoPlayerController?.play();
+    _currentVideoPlayer?.play();
     if (_currentProgressAnimation != null) {
       _animationController?.forward(
         from: _currentProgressAnimation?.value,
@@ -229,7 +229,7 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
 
   /// Starts the countdown for the story item duration.
   void _startStoryCountdown() {
-    _currentVideoPlayer?.videoPlayerController?.addListener(videoListener);
+    _currentVideoPlayer?.addListener(videoListener);
     if (_currentVideoPlayer != null) {
       return;
     }
@@ -273,8 +273,7 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
     );
 
     _animationController?.duration =
-        _currentVideoPlayer?.videoPlayerController?.value.duration ??
-            currentItem.duration;
+        _currentVideoPlayer?.value.duration ?? currentItem.duration;
 
     _currentProgressAnimation =
         Tween<double>(begin: 0, end: 1).animate(_animationController!)
@@ -286,22 +285,19 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
 
   /// Listener for the video player's state changes.
   void videoListener() {
-    final dur = _currentVideoPlayer
-        ?.videoPlayerController?.value.duration?.inMilliseconds;
-    final pos = _currentVideoPlayer
-        ?.videoPlayerController?.value.position.inMilliseconds;
+    final dur = _currentVideoPlayer?.value.duration.inMilliseconds;
+    final pos = _currentVideoPlayer?.value.position.inMilliseconds;
 
     if (pos == dur) {
       _playNext();
       return;
     }
 
-    if (_currentVideoPlayer?.videoPlayerController?.value.isBuffering ??
-        false) {
+    if (_currentVideoPlayer?.value.isBuffering ?? false) {
       _animationController?.stop(canceled: false);
     }
 
-    if (_currentVideoPlayer?.videoPlayerController?.value.isPlaying ?? false) {
+    if (_currentVideoPlayer?.value.isPlaying ?? false) {
       if (_currentProgressAnimation != null) {
         _animationController?.forward(from: _currentProgressAnimation?.value);
       }
@@ -333,16 +329,15 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
   /// Pauses the media playback.
   void _pauseMedia() {
     _audioPlayer?.pause();
-    _currentVideoPlayer?.videoPlayerController?.pause();
+    _currentVideoPlayer?.pause();
     _animationController?.stop(canceled: false);
   }
 
   /// Toggles mute/unmute for the media.
   void _toggleMuteUnMuteMedia() {
     if (_currentVideoPlayer != null) {
-      final videoPlayerValue =
-          _currentVideoPlayer?.videoPlayerController?.value;
-      if (videoPlayerValue?.volume == 1) {
+      final videoPlayerValue = _currentVideoPlayer!.value;
+      if (videoPlayerValue.volume == 1) {
         _currentVideoPlayer!.setVolume(0);
       } else {
         _currentVideoPlayer!.setVolume(1);
@@ -364,8 +359,8 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
     if (_currentVideoPlayer != null &&
         currentIndex != (widget.items.length - 1)) {
       /// Dispose the video player only in case of multiple story
-      _currentVideoPlayer?.videoPlayerController?.removeListener(videoListener);
-      _currentVideoPlayer?.videoPlayerController?.dispose();
+      _currentVideoPlayer?.removeListener(videoListener);
+      _currentVideoPlayer?.dispose();
       _currentVideoPlayer = null;
     }
 
@@ -399,8 +394,8 @@ class _FlutterStoryViewState extends State<FlutterStoryView>
       _audioPlayerStateStream?.cancel();
     }
     if (_currentVideoPlayer != null) {
-      _currentVideoPlayer?.videoPlayerController?.removeListener(videoListener);
-      _currentVideoPlayer?.videoPlayerController?.dispose();
+      _currentVideoPlayer?.removeListener(videoListener);
+      _currentVideoPlayer?.dispose();
       _currentVideoPlayer = null;
     }
 

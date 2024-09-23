@@ -1,7 +1,12 @@
-import 'package:better_player/better_player.dart';
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-import '../../flutter_story_presenter.dart';
+import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
+
+import '../models/story_item.dart';
+import '../story_presenter/story_view.dart';
+import '../utils/story_utils.dart';
+import '../utils/video_utils.dart';
 
 /// A widget that displays a video story view, supporting different video sources
 /// (network, file, asset) and optional thumbnail and error widgets.
@@ -24,54 +29,45 @@ class VideoStoryView extends StatefulWidget {
 }
 
 class _VideoStoryViewState extends State<VideoStoryView> {
-  BetterPlayerController? _betterPlayerController;
+  VideoPlayerController? videoPlayerController;
   bool hasError = false;
 
   @override
   void initState() {
-    _initializeBetterPlayer();
+    _initialiseVideoPlayer();
     super.initState();
   }
 
-  /// Initializes the BetterPlayer controller based on the source of the video.
-  Future<void> _initializeBetterPlayer() async {
+  /// Initializes the video player controller based on the source of the video.
+  Future<void> _initialiseVideoPlayer() async {
     try {
       final storyItem = widget.storyItem;
-      BetterPlayerDataSource? dataSource;
-
       if (storyItem.storyItemSource.isNetwork) {
-        dataSource = BetterPlayerDataSource(
-          BetterPlayerDataSourceType.network,
-          storyItem.url!,
-          cacheConfiguration: storyItem.videoConfig?.cacheVideo != null
-              ? const BetterPlayerCacheConfiguration(useCache: true)
-              : null,
+        // Initialize video controller for network source.
+        videoPlayerController =
+            await VideoUtils.instance.videoControllerFromUrl(
+          url: storyItem.url!,
+          cacheFile: storyItem.videoConfig?.cacheVideo,
+          videoPlayerOptions: storyItem.videoConfig?.videoPlayerOptions,
         );
       } else if (storyItem.storyItemSource.isFile) {
-        dataSource = BetterPlayerDataSource(
-          BetterPlayerDataSourceType.file,
-          storyItem.url!,
+        // Initialize video controller for file source.
+        videoPlayerController = VideoUtils.instance.videoControllerFromFile(
+          file: File(storyItem.url!),
+          videoPlayerOptions: storyItem.videoConfig?.videoPlayerOptions,
+        );
+      } else {
+        // Initialize video controller for asset source.
+        videoPlayerController = VideoUtils.instance.videoControllerFromAsset(
+          assetPath: storyItem.url!,
+          videoPlayerOptions: storyItem.videoConfig?.videoPlayerOptions,
         );
       }
-
-      _betterPlayerController = BetterPlayerController(
-        BetterPlayerConfiguration(
-          looping: widget.looping ?? false,
-          fit: storyItem.videoConfig?.fit ?? BoxFit.cover,
-          autoPlay: true,
-          autoDispose: true,
-          aspectRatio: storyItem.videoConfig?.useVideoAspectRatio ?? false
-              ? null
-              : 16 / 9, // Example aspect ratio, adjust as needed
-          controlsConfiguration: const BetterPlayerControlsConfiguration(
-            showControls: false, // Hide controls by default
-          ),
-        ),
-        betterPlayerDataSource: dataSource,
-      );
-
-      widget.onVideoLoad?.call(_betterPlayerController!);
-      _betterPlayerController!.setVolume(storyItem.isMuteByDefault ? 0 : 1);
+      await videoPlayerController?.initialize();
+      widget.onVideoLoad?.call(videoPlayerController!);
+      await videoPlayerController?.play();
+      await videoPlayerController?.setLooping(widget.looping ?? false);
+      await videoPlayerController?.setVolume(storyItem.isMuteByDefault ? 0 : 1);
     } catch (e) {
       hasError = true;
       debugPrint('$e');
@@ -79,36 +75,49 @@ class _VideoStoryViewState extends State<VideoStoryView> {
     setState(() {});
   }
 
+  BoxFit get fit => widget.storyItem.videoConfig?.fit ?? BoxFit.cover;
+
   @override
   void dispose() {
-    _betterPlayerController?.dispose();
+    videoPlayerController?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: (widget.storyItem.videoConfig?.fit == BoxFit.cover)
-          ? Alignment.topCenter
-          : Alignment.center,
-      fit: (widget.storyItem.videoConfig?.fit == BoxFit.cover)
-          ? StackFit.expand
-          : StackFit.loose,
+      alignment: (fit == BoxFit.cover) ? Alignment.topCenter : Alignment.center,
+      fit: (fit == BoxFit.cover) ? StackFit.expand : StackFit.loose,
       children: [
         if (widget.storyItem.thumbnail != null) ...{
+          // Display the thumbnail if provided.
           widget.storyItem.thumbnail!,
         },
         if (widget.storyItem.errorWidget != null && hasError) ...{
+          // Display the error widget if an error occurred.
           widget.storyItem.errorWidget!,
         },
-        if (_betterPlayerController != null) ...{
-          AspectRatio(
-            aspectRatio: _betterPlayerController!
-                    .betterPlayerConfiguration.aspectRatio ??
-                _betterPlayerController!
-                    .videoPlayerController!.value.aspectRatio,
-            child: BetterPlayer(controller: _betterPlayerController!),
-          ),
+        if (videoPlayerController != null) ...{
+          if (widget.storyItem.videoConfig?.useVideoAspectRatio ?? false) ...{
+            // Display the video with aspect ratio if specified.
+            AspectRatio(
+              aspectRatio: videoPlayerController!.value.aspectRatio,
+              child: VideoPlayer(videoPlayerController!),
+            )
+          } else ...{
+            // Display the video fitted to the screen.
+            FittedBox(
+              fit: widget.storyItem.videoConfig?.fit ?? BoxFit.cover,
+              alignment: Alignment.center,
+              child: SizedBox(
+                width: widget.storyItem.videoConfig?.width ??
+                    videoPlayerController!.value.size.width,
+                height: widget.storyItem.videoConfig?.height ??
+                    videoPlayerController!.value.size.height,
+                child: VideoPlayer(videoPlayerController!),
+              ),
+            )
+          },
         }
       ],
     );
