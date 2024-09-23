@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:better_player/better_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:video_player/video_player.dart';
 
 class VideoUtils {
   VideoUtils._();
@@ -13,55 +13,63 @@ class VideoUtils {
   // Singleton instance of VideoUtils.
   static final VideoUtils instance = VideoUtils._();
 
-  // Method to create a VideoPlayerController from a URL.
+  // Method to create a BetterPlayerController from a URL.
   // If cacheFile is true, it attempts to cache the video file.
-  Future<VideoPlayerController> videoControllerFromUrl({
+  Future<BetterPlayerController> videoControllerFromUrl({
     required String url,
     bool? cacheFile = false,
-    VideoPlayerOptions? videoPlayerOptions,
+    BetterPlayerConfiguration? betterPlayerConfig,
   }) async {
+    BetterPlayerDataSource dataSource;
+
     try {
       File? cachedVideo;
+
       // If caching is enabled, try to get the cached file.
       if (cacheFile ?? false) {
         cachedVideo = await _cacheManager.getSingleFile(url);
       }
-      // If a cached video file is found, create a VideoPlayerController from it.
+
+      // If a cached video file is found, create a BetterPlayerDataSource from it.
       if (cachedVideo != null) {
-        return VideoPlayerController.file(
-          cachedVideo,
-          videoPlayerOptions: videoPlayerOptions,
+        dataSource = BetterPlayerDataSource(
+          BetterPlayerDataSourceType.file,
+          cachedVideo.path,
+        );
+      } else {
+        // If no cached file is found, create a BetterPlayerDataSource from the network URL.
+        dataSource = BetterPlayerDataSource(
+          BetterPlayerDataSourceType.network,
+          url,
+          cacheConfiguration: cacheFile != null
+              ? const BetterPlayerCacheConfiguration(useCache: true)
+              : null,
         );
       }
+
+      return BetterPlayerController(
+        betterPlayerConfig ?? const BetterPlayerConfiguration(),
+        betterPlayerDataSource: dataSource,
+      );
     } catch (e) {
       debugPrint(e.toString());
+      rethrow;
     }
-    // If no cached file is found, create a VideoPlayerController from the network URL.
-    return VideoPlayerController.networkUrl(
-      Uri.parse(url),
-      videoPlayerOptions: videoPlayerOptions,
-    );
   }
 
-  // Method to create a VideoPlayerController from a local file.
-  VideoPlayerController videoControllerFromFile({
+  // Method to create a BetterPlayerController from a local file.
+  BetterPlayerController videoControllerFromFile({
     required File file,
-    VideoPlayerOptions? videoPlayerOptions,
+    BetterPlayerConfiguration? betterPlayerConfig,
   }) {
-    return VideoPlayerController.file(
-      file,
-      videoPlayerOptions: videoPlayerOptions,
+    BetterPlayerDataSource dataSource = BetterPlayerDataSource(
+      BetterPlayerDataSourceType.file,
+      file.path,
     );
-  }
 
-  // Method to create a VideoPlayerController from an asset file.
-  VideoPlayerController videoControllerFromAsset({
-    required String assetPath,
-    VideoPlayerOptions? videoPlayerOptions,
-  }) {
-    return VideoPlayerController.asset(
-      assetPath,
-      videoPlayerOptions: videoPlayerOptions,
+    return BetterPlayerController(
+      betterPlayerConfig ?? const BetterPlayerConfiguration(),
+      betterPlayerDataSource: dataSource,
     );
   }
 }

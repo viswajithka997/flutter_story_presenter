@@ -1,11 +1,11 @@
 library smooth_video_progress;
 
+import 'package:better_player/better_player.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:video_player/video_player.dart';
 
 /// A widget that provides a method of building widgets using an interpolated
-/// position value for [VideoPlayerController].
+/// position value for [BetterPlayerController].
 class SmoothVideoProgress extends HookWidget {
   const SmoothVideoProgress({
     super.key,
@@ -14,8 +14,8 @@ class SmoothVideoProgress extends HookWidget {
     this.child,
   });
 
-  /// The [VideoPlayerController] to build a progress widget for.
-  final VideoPlayerController controller;
+  /// The [BetterPlayerController] to build a progress widget for.
+  final BetterPlayerController controller;
 
   /// The builder function.
   ///
@@ -33,16 +33,16 @@ class SmoothVideoProgress extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final value = useValueListenable(controller);
+    final value = useValueListenable(controller.videoPlayerController!);
     final animationController = useAnimationController(
         duration: value.duration, keys: [value.duration]);
 
     final targetRelativePosition =
-        value.position.inMilliseconds / value.duration.inMilliseconds;
+        value.position.inMilliseconds / value.duration!.inMilliseconds;
 
     final currentPosition = Duration(
         milliseconds:
-            (animationController.value * value.duration.inMilliseconds)
+            (animationController.value * value.duration!.inMilliseconds)
                 .round());
 
     final offset = value.position - currentPosition;
@@ -56,7 +56,8 @@ class SmoothVideoProgress extends HookWidget {
         final correction = const Duration(milliseconds: 500) - offset;
         final targetPos =
             correct ? animationController.value : targetRelativePosition;
-        final duration = correct ? value.duration + correction : value.duration;
+        final duration =
+            correct ? value.duration! + correction : value.duration;
 
         animationController.duration = duration;
         value.isPlaying
@@ -77,11 +78,11 @@ class SmoothVideoProgress extends HookWidget {
       animation: animationController,
       builder: (context, child) {
         final millis =
-            animationController.value * value.duration.inMilliseconds;
+            animationController.value * value.duration!.inMilliseconds;
         return builder(
           context,
           Duration(milliseconds: millis.round()),
-          value.duration,
+          value.duration!,
           child,
         );
       },
