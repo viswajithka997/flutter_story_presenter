@@ -49,7 +49,8 @@ class _HomeState extends State<Home> {
         StoryItem(
           storyItemType: StoryItemType.video,
           url:
-              'https://dopamine-production.s3.ap-south-1.amazonaws.com/Dope/Dope-null/doper-3306//Cft0FBmE23gIb5oGJsChX.mp4',
+              // 'https://dopamine-production.s3.ap-south-1.amazonaws.com/Dope/Dope-null/doper-3306//Cft0FBmE23gIb5oGJsChX.mp4',
+              "https://dopamine-production.s3.ap-south-1.amazonaws.com/Dope/doper-5910/Dope-1065/FGEBD6s-gAY-bcUvijlzW.mp4",
           thumbnail: const Center(
               child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
