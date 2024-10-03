@@ -1,14 +1,17 @@
 # This is a generated file; do not edit or check into version control.
 audio_session=/Users/viswajithka/.pub-cache/hosted/pub.dev/audio_session-0.1.21/
+better_player=/Users/viswajithka/.pub-cache/hosted/pub.dev/better_player-0.0.84/
 just_audio=/Users/viswajithka/.pub-cache/hosted/pub.dev/just_audio-0.9.40/
 just_audio_web=/Users/viswajithka/.pub-cache/hosted/pub.dev/just_audio_web-0.4.12/
+package_info_plus=/Users/viswajithka/.pub-cache/hosted/pub.dev/package_info_plus-8.0.2/
 path_provider=/Users/viswajithka/.pub-cache/hosted/pub.dev/path_provider-2.1.4/
 path_provider_android=/Users/viswajithka/.pub-cache/hosted/pub.dev/path_provider_android-2.2.10/
 path_provider_foundation=/Users/viswajithka/.pub-cache/hosted/pub.dev/path_provider_foundation-2.4.0/
 path_provider_linux=/Users/viswajithka/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1/
 path_provider_windows=/Users/viswajithka/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/
 sqflite=/Users/viswajithka/.pub-cache/hosted/pub.dev/sqflite-2.3.3+1/
-video_player=/Users/viswajithka/.pub-cache/hosted/pub.dev/video_player-2.9.1/
-video_player_android=/Users/viswajithka/.pub-cache/hosted/pub.dev/video_player_android-2.7.3/
+video_player=/Users/viswajithka/.pub-cache/hosted/pub.dev/video_player-2.9.2/
+video_player_android=/Users/viswajithka/.pub-cache/hosted/pub.dev/video_player_android-2.7.5/
 video_player_avfoundation=/Users/viswajithka/.pub-cache/hosted/pub.dev/video_player_avfoundation-2.6.1/
 video_player_web=/Users/viswajithka/.pub-cache/hosted/pub.dev/video_player_web-2.3.2/
+wakelock_plus=/Users/viswajithka/.pub-cache/hosted/pub.dev/wakelock_plus-1.2.8/
